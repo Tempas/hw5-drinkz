@@ -1,0 +1,19 @@
+import drinkz.db
+
+drinkz.db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
+drinkz.db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
+drinkz.db.add_to_inventory('Johnnie Walker', 'Black Label', '10 oz')
+drinkz.db.add_to_inventory('Johnnie Walker', 'Black Label', '10 oz')
+
+print 'Manufacturer\tLiquor\t\tAmount'
+print '------------\t------\t\t------'
+dict = {}
+for mfg, liquor in drinkz.db.get_liquor_inventory():
+    amount = drinkz.db.get_liquor_amount(mfg,liquor)
+    dict[mfg+","+liquor] = amount
+
+myArray = []
+for k in dict:
+    myArray = k.split(",") 
+    print '%s\t%s\t%s' % (myArray[0], myArray[1], dict[k])
+

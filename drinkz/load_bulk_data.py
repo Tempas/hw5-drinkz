@@ -22,18 +22,21 @@ def load_bottle_types(fp):
 
     Returns number of bottle types loaded
     """
-    reader = csv.reader(fp)
+    reader = data_reader(fp)
 
     x = []
     n = 0
     for line in reader:
-        if line[0].startswith('#'):
-            continue
-        
-        (mfg, name, typ) = line
+        try:        
+           (mfg, name, typ) = line
+        except:
+            print "Line formatted incorrectly"
+           
         n += 1
-        db.add_bottle_type(mfg, name, typ)
-
+        try:
+            db.add_bottle_type(mfg, name, typ)
+        except:
+            print "Could not add bottle type"
     return n
 
 def load_inventory(fp):
@@ -49,12 +52,29 @@ def load_inventory(fp):
     Note that a LiquorMissing exception is raised if bottle_types_db does
     not contain the manufacturer and liquor name already.
     """
-    reader = csv.reader(fp)
+    reader = data_reader(fp)
 
     x = []
     n = 0
-    for (mfg, name, amount) in reader:
+    for line in reader:
+        try:
+            (mfg, name, amount) = line;
+        except:
+            print "Line formatted incorrectly"
         n += 1
-        db.add_to_inventory(mfg, name, amount)
-
+        try:
+            db.add_to_inventory(mfg, name, amount)
+        except:
+            print "Could not add to inventory"
     return n
+
+def data_reader(fp):
+
+    reader = csv.reader(fp)
+
+    for line in reader:
+        if line[0].startswith('#'):
+            continue
+        if not line[0].strip():
+            continue
+        yield line
