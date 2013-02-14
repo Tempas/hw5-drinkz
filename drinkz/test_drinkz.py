@@ -160,7 +160,7 @@ def test_get_liquor_amount_3():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '13 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == 1384, amount
+    assert amount == 1384.46, amount
 
 # ADDED BY JON
 def test_get_liquor_amount_4():
@@ -170,7 +170,7 @@ def test_get_liquor_amount_4():
     db.add_to_inventory('Johnnie Walker', 'Black Label', '13 oz')
     db.add_to_inventory('Johnnie Walker', 'Black Label', '11 oz')
     amount = db.get_liquor_amount('Johnnie Walker', 'Black Label')
-    assert amount == 709, amount
+    assert amount == 709.76, amount
 
 
 
@@ -178,14 +178,6 @@ def test_script_load_bottle_types_1():
     scriptpath = 'bin/load-liquor-types'
     module = imp.load_source('llt', scriptpath)
     exit_code = module.main([scriptpath, 'test-data/bottle-types-data-1.txt'])
-
-    assert exit_code == 0, 'non zero exit code %s' % exit_code
-
-# ADDED BY JON
-def test_script_load_iventory_1():
-    scriptpath = 'bin/load-liquor-inventory'
-    module = imp.load_source('llt', scriptpath)
-    exit_code = module.main([scriptpath, 'test-data/inventory-data-1.txt'])
 
     assert exit_code == 0, 'non zero exit code %s' % exit_code
 
