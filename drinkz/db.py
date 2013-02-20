@@ -99,6 +99,6 @@ def check_inventory_for_type(typ):
         if(typ == t or typ == l): #checks for generic or label
             myList.append((m,l))
     return myList
+
             
-    
-    
+        
