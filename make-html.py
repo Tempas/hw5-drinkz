@@ -22,7 +22,7 @@ drinkz.db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
 
 r = drinkz.recipes.Recipe('scotch on the rocks', [('blended scotch','4 oz')])
 drinkz.db.add_recipe(r)
-r = drinkz.recipes.Recipe('vodka martini', [('unflavored vodka', '6 oz'),('vermouth', '1.5 oz')])
+r = drinkz.recipes.Recipe('vodka martini', [('unflavored vodka', '7 oz'),('vermouth', '1.5 oz')])
 drinkz.db.add_recipe(r)
 r = drinkz.recipes.Recipe('vomit inducing martini', [('orange juice',
                                               '6 oz'),
