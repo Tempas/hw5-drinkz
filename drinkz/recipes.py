@@ -1,44 +1,51 @@
 import db
 
+
+    
 class Recipe(object):
     _recipeName = ""
     _myIngredients = set()
     def __init__(self, name, ingredientList):
-        _recipeName = name
+        self._myIngredients = set()
+        self._recipeName = name
         for ingredient in ingredientList:
-            _myIngredients.add(ingredient)
+            self._myIngredients.add(ingredient)
 
-    def need_ingredients():
+    def need_ingredients(self):
         myList = list()
-        for currentIngredient in _myIngredients:
-            setOfCertainType = check_inventory_for_type(currenIngredient[0])
-            for value in setOfCertainType:
-                totalAmountOfCertainType = get_liqour_amount(value[0],value[1])
-                ingredientAmount = convert_to_ml(currentIngredient[1])
-                if( ingredientAmount > totalAmountOfCertainType ):
-                    myList.append((currentIngredient[0],ingredientAmount - totalAmountOfCertainType))
+        for currentIngredient in self._myIngredients:
+            listOfMandLTuples = db.check_inventory_for_type(currentIngredient[0])
+            print listOfMandLTuples
+            amountInStock = 0
+            for myTuple in listOfMandLTuples:
+                val = db.get_liquor_amount(myTuple[0],myTuple[1])
+                if val>amountInStock:
+                    amountInStock = val
+            amountInDebt = amountInStock - self.convert_to_ml(currentIngredient[1])
+            
+            if ( amountInDebt < 0 ):
+                myList.append((currentIngredient[0],amountInDebt*-1.))
         return myList
                     
                 
 
-    def convert_to_ml(amount):
+    def convert_to_ml(self,amount):
         amounts = amount.split(" ")
         total = 0
         if amounts[1] == "oz":
             total += float(amounts[0])*29.5735
         elif amounts[1] == "ml":
             total += float(amounts[0])
+        elif amounts[1] == "liter":
+            total += float(amounts[0])*1000.0
         elif amounts[1] == "gallon":
             total += float(amounts[0])*3785.41178
         return total
 
-    def check_inventory_for_type(liqourType):
-        mySet = set()
-        for m, l in db.get_liquor_inventory():
-            if liqourType == l:
-                mySet.add((m,l))
 
         return mySet
-            
+
+    def __eq__(self, other): 
+        return self._recipeName == other._recipeName
             
         

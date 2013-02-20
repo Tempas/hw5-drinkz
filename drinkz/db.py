@@ -7,9 +7,10 @@ _bottle_types_db = set()
 _inventory_db = {}
 _recipes_db = set()
 
+
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
-    global _bottle_types_db, _inventory_db
+    global _bottle_types_db, _inventory_db, _recipes_db
     _bottle_types_db = set()
     _inventory_db = {}
     _recipes_db = set()
@@ -18,7 +19,8 @@ def _reset_db():
 # override any methods.
 class LiquorMissing(Exception):
     pass
-
+class DuplicateRecipeName(Exception):
+    pass
 def add_bottle_type(mfg, liquor, typ):
     "Add the given bottle type into the drinkz database."
     _bottle_types_db.add((mfg, liquor, typ))
@@ -41,6 +43,8 @@ def add_to_inventory(mfg, liquor, amount):
         total += float(amounts[0])*29.5735
     elif amounts[1] == "ml":
         total += float(amounts[0])
+    elif amounts[1] == "liter":
+        total += float(amounts[0])*1000.0
     elif amounts[1] == "gallon":
         total += float(amounts[0])*3785.41178
         
@@ -72,19 +76,29 @@ def get_liquor_inventory():
         yield m, l
 
 def add_recipe(r):
-    found = false
+    found = False
     for recipe in _recipes_db:
-        if(r[0] == recipe[0]):
-            found = true
-    if found == false:
-        _recipes_db.add(r)
+        if recipe._recipeName == r._recipeName:
+            raise DuplicateRecipeName
+    _recipes_db.add(r)
     
 def get_recipe(name):
     for recipe in _recipes_db:
-        if name == recipe._name:
+        if name == recipe._recipeName:            
             return recipe
-    return null
+    return 0
 
 def get_all_recipes():
     return _recipes_db
+
+def check_inventory_for_type(typ):
+    myList = list()
+    
+    for (m, l, t) in _bottle_types_db:
+
+        if(typ == t or typ == l): #checks for generic or label
+            myList.append((m,l))
+    return myList
+            
+    
     
