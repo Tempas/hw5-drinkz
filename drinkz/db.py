@@ -1,7 +1,7 @@
 """
 Database functionality for drinkz information.
 """
-import drinkz.recipes
+import recipes
 # private singleton variables at module level
 _bottle_types_db = set()
 _inventory_db = {}
@@ -37,16 +37,7 @@ def add_to_inventory(mfg, liquor, amount):
     if not _check_bottle_type_exists(mfg, liquor):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
-    total = 0.0
-    amounts = amount.split(" ")
-    if amounts[1] == "oz":
-        total += float(amounts[0])*29.5735
-    elif amounts[1] == "ml":
-        total += float(amounts[0])
-    elif amounts[1] == "liter":
-        total += float(amounts[0])*1000.0
-    elif amounts[1] == "gallon":
-        total += float(amounts[0])*3785.41178
+    total = convert_to_ml(amount)
         
     if (mfg,liquor) in _inventory_db:
         _inventory_db[(mfg, liquor)] += total
@@ -100,5 +91,17 @@ def check_inventory_for_type(typ):
             myList.append((m,l))
     return myList
 
-            
-        
+
+
+def convert_to_ml(amount):
+    amounts = amount.split(" ")
+    total = 0
+    if amounts[1] == "oz":
+        total += float(amounts[0])*29.5735
+    elif amounts[1] == "ml":
+        total += float(amounts[0])
+    elif amounts[1] == "liter":
+        total += float(amounts[0])*1000.0
+    elif amounts[1] == "gallon":
+        total += float(amounts[0])*3785.41178
+    return total      

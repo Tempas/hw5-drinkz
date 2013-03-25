@@ -31,6 +31,7 @@ def load_bottle_types(fp):
            (mfg, name, typ) = line
         except:
             print "Line formatted incorrectly"
+            continue
            
         n += 1
         try:
@@ -61,6 +62,7 @@ def load_inventory(fp):
             (mfg, name, amount) = line;
         except:
             print "Line formatted incorrectly"
+            continue
         n += 1
         try:
             db.add_to_inventory(mfg, name, amount)
@@ -73,8 +75,10 @@ def data_reader(fp):
     reader = csv.reader(fp)
 
     for line in reader:
-        if line[0].startswith('#'):
+        if not line:
             continue
         if not line[0].strip():
+            continue
+        if line[0].startswith('#'):
             continue
         yield line
