@@ -7,7 +7,7 @@ import simplejson
 import db
 import recipes
 import os.path
-import fileinput,sys
+import fileinput,sys 
 
 dispatch = {
     '/' : 'index',
