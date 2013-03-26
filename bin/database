@@ -64,34 +64,34 @@ S'_myIngredients'
 p30
 g1
 ((lp31
-(g5
-S'4 oz'
+(g9
+S'7 oz'
 p32
 tp33
-atRp34
+a(g16
+S'1.5 oz'
+p34
+tp35
+atRp36
 sS'_recipeName'
-p35
-S'scotch on the rocks'
-p36
+p37
+S'vodka martini'
+p38
 sbag25
 (g26
 g27
-NtRp37
-(dp38
+NtRp39
+(dp40
 g30
 g1
-((lp39
-(g9
-S'7 oz'
-p40
-tp41
-a(g16
-S'1.5 oz'
+((lp41
+(g5
+S'4 oz'
 p42
 tp43
 atRp44
-sg35
-S'vodka martini'
+sg37
+S'scotch on the rocks'
 p45
 sbag25
 (g26
@@ -102,7 +102,7 @@ g30
 g1
 ((lp48
 (g16
-g42
+g34
 tp49
 a(S'orange juice'
 p50
@@ -110,7 +110,7 @@ S'6 oz'
 p51
 tp52
 atRp53
-sg35
+sg37
 S'vomit inducing martini'
 p54
 sbatRp55

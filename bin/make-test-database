@@ -10,7 +10,7 @@ def main(args):
    try:
       filename = args[1]
    except Exception:
-      filename = "myTest"
+      filename = "database"
    drinkz.db._reset_db()
 
    drinkz.db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
