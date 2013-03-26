@@ -4,32 +4,18 @@
 import os
 import drinkz.db
 import drinkz.recipes
+import sys
+from drinkz.db import save_db, load_db
 
 
-drinkz.db._reset_db()
+if __name__ == '__main__':
+    args = sys.argv
+    try:
+        filename = args[1]
+    except:
+        filename = 'myTest'
 
-drinkz.db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
-drinkz.db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
-
-drinkz.db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
-drinkz.db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
-
-drinkz.db.add_bottle_type('Gray Goose', 'vodka', 'unflavored vodka')
-drinkz.db.add_to_inventory('Gray Goose', 'vodka', '1 liter')
-
-drinkz.db.add_bottle_type('Rossi', 'extra dry vermouth', 'vermouth')
-drinkz.db.add_to_inventory('Rossi', 'extra dry vermouth', '24 oz')
-
-r = drinkz.recipes.Recipe('scotch on the rocks', [('blended scotch','4 oz')])
-drinkz.db.add_recipe(r)
-r = drinkz.recipes.Recipe('vodka martini', [('unflavored vodka', '7 oz'),('vermouth', '1.5 oz')])
-drinkz.db.add_recipe(r)
-r = drinkz.recipes.Recipe('vomit inducing martini', [('orange juice',
-                                              '6 oz'),
-                                             ('vermouth',
-                                              '1.5 oz')])
-
-drinkz.db.add_recipe(r)
+    load_db('bin/'+filename)
 
 try:
     os.mkdir('html')
@@ -84,3 +70,5 @@ print >> fp,"</ul>"
 print >>fp, "<a href='index.html'>Home</a><p><a href='recipes.html'>Recipes</a><p><a href='inventory.html'>Inventory</a>"
 
 fp.close()
+
+

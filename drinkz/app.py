@@ -1,29 +1,13 @@
 #! /usr/bin/env python
 from wsgiref.simple_server import make_server
+from db import save_db, load_db
+import sys
 import urlparse
 import simplejson
 import db
 import recipes
-
-
-##db._reset_db()
-##
-##db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
-##db.add_to_inventory('Johnnie Walker', 'black label', '500 ml')
-##
-##db.add_bottle_type('Uncle Herman\'s', 'moonshine', 'blended scotch')
-##db.add_to_inventory('Uncle Herman\'s', 'moonshine', '5 liter')
-##
-##r = recipes.Recipe('scotch on the rocks', [('blended scotch','4 oz')])
-##db.add_recipe(r)
-##r = recipes.Recipe('vodka martini', [('unflavored vodka', '7 oz'),('vermouth', '1.5 oz')])
-##db.add_recipe(r)
-##r = recipes.Recipe('vomit inducing martini', [('orange juice',
-##                                              '6 oz'),
-##                                             ('vermouth',
-##                                              '1.5 oz')])
-##
-##db.add_recipe(r)
+import os.path
+import fileinput,sys
 
 dispatch = {
     '/' : 'index',
@@ -248,9 +232,20 @@ def setUpWebServer():
     print "Try using a Web browser to go to http://%s:%d/" % \
           (socket.getfqdn(), port)
     httpd.serve_forever()
-
     
 if __name__ == '__main__':
+    args = sys.argv
+    try:
+        filename = args[1]
+    except:
+        filename = 'myTest'
+
+    for line in fileinput.input(['../bin/'+filename], inplace=True):
+        line = line.replace("drinkz.", "")
+        sys.stdout.write(line)
+
+    load_db('../bin/'+filename)
     setUpWebServer()
+
 
 

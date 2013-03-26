@@ -54,9 +54,5 @@ def test_check_generated_page():
     assert text.find("scotch on the rocks") != -1, text
     assert text.find("vomit inducing martini") != -1, text
 
-    
-
-if __name__ == '__main__':
-    check_generated_page()
 
 
