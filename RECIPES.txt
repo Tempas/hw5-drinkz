@@ -1,0 +1,23 @@
+RECIPES.txt
+
+1.Create a yaml recipe file with contents like so:
+
+(::::NOTE:::: below spacing is crucial. 4 spaces for indent, space after colon for ingredients::::::)
+
+# tree format
+recipeDict:
+    vomit inducing martini:
+        orange juice: 6 oz
+        vermout: 1.5 oz
+    whiskey bath:
+        blended scotch: 2 liter
+    scotch on the rocks:
+        vodka: 4 oz
+
+from example file recipe-data.yaml.txt in test-data folder
+	
+
+	
+2.To bulk load recipes, call load_bulk_data module with an open file.
+
+	Example: "load_bulk_data.load_recipes(open("test-data/recipe-data.yaml.txt", "rb")"

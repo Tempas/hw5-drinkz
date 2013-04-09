@@ -7,7 +7,10 @@ import simplejson
 import db
 import recipes
 import os.path
-import fileinput,sys 
+import fileinput
+import jinja2
+import sys
+import unicodedata
 
 dispatch = {
     '/' : 'index',
@@ -16,6 +19,9 @@ dispatch = {
     '/liqourTypes' : 'liqourTypes',
     '/convertToML' : 'formConvertToML',
     '/recvAmount' : 'recvAmount',
+    '/addType' : 'addType',
+    '/addInventory' : 'addInventory',
+    '/addRecipe' : 'addRecipe',
     '/rpc' : 'dispatch_rpc'
 }
 
@@ -118,6 +124,65 @@ Visit:
         start_response('200 OK', list(html_headers))
         return [data]
 
+    def addType(self, environ, start_response):
+        formdata = environ['QUERY_STRING']
+        results = urlparse.parse_qs(formdata)
+        mfg = results['mfg'][0]
+        liquor = results['liquor'][0]
+        typ = results['typ'][0]
+        db.add_bottle_type(mfg, liquor, typ)
+        
+
+        content_type = 'text/html'
+        data = liqourTypesList();
+        start_response('200 OK', list(html_headers))
+        return [data]
+
+    def addInventory(self, environ, start_response):
+        formdata = environ['QUERY_STRING']
+        results = urlparse.parse_qs(formdata)
+        mfg = results['mfg'][0]
+        liquor = results['liquor'][0]
+        amt = results['amt'][0]
+        try:
+            db.add_to_inventory(mfg, liquor, amt)
+            data = inventoryList()
+        except Exception:
+            data = inventoryList() +"""<script>
+
+alert("That liquor is not an added type.");
+
+</script>""" 
+
+        content_type = 'text/html'
+        start_response('200 OK', list(html_headers))
+        return [data]
+
+    def addRecipe(self, environ, start_response):
+        formdata = environ['QUERY_STRING']
+        results = urlparse.parse_qs(formdata)
+        name = results['name'][0]
+        ings = results['ing'][0]
+        myList = ings.split(',')
+        myIngSet = set()
+        i = 0
+        while i < len(myList):
+            
+            val = (ingred,amount) = (myList[i],myList[i+1])
+            myIngSet.add(val)
+            i+=2
+            
+        r = recipes.Recipe(name,myIngSet)
+        try:
+            db.add_recipe(r)
+            data = recipesList()
+        except Exception:
+            data = recipesList()
+
+        content_type = 'text/html'
+        start_response('200 OK', list(html_headers))
+        return [data]
+    
     def dispatch_rpc(self, environ, start_response):
         # POST requests deliver input data via a file-like handle,
         # with the size of the data specified by CONTENT_LENGTH;
@@ -171,99 +236,178 @@ Visit:
         for (m,l) in db.get_liquor_inventory():
             liqourInvList.append((m,l))
         return liqourInvList
+    def rpc_get_liqour_types(self):
+        liqourTypeList = list()
+        for (m,l) in db.get_liquor_types():
+            liqourTypeList.append((m,l))
+        return liqourTypeList
+    def rpc_add_bottle_type(self,mfg,liquor,typ):
+        returnVal = False
+        try:
+            db.add_bottle_type(mfg, liquor, typ)
+            returnVal = True;
+        except Exception:
+            returnVal = False
+        return returnVal
+
+    def rpc_add_to_inventory(self,mfg,liquor,amount):
+        returnVal = False
+        try:
+            db.add_to_inventory(mfg, liquor, amount)
+            returnVal = True;
+        except Exception:
+            returnVal = False
+        return returnVal
+    def rpc_add_recipe(self,name,ings):
+        myList = ings.split(',')
+        myIngSet = set()
+        i = 0
+        while i < len(myList):
+            
+            val = (ingred,amount) = (myList[i],myList[i+1])
+            myIngSet.add(val)
+            i+=2
+            
+        r = recipes.Recipe(name,myIngSet)
+        try:
+            db.add_recipe(r)
+            returnVal = True
+        except Exception:
+            returnVal = False
+        return returnVal
+    
     def rpc_hello(self):
         return 'world!'
 
     def rpc_add(self, a, b):
-
         return int(a) + int(b)
 
     
 
 
 def convertToML():
-    return """
-<html>
-<head>
-<title>Convert to ml</title>
-<style type='text/css'>
-h1 {color:red;}
-body {
-font-size: 17px;
-}
-</style>
-<h1>Convert to ml</h1>
-<form action='recvAmount'>
+    # this sets up jinja2 to load templates from the 'templates' directory
+    loader = jinja2.FileSystemLoader('../drinkz/templates')
+
+    env = jinja2.Environment(loader=loader)
+    # pick up a filename to render
+    filename = "listPages.html"
+    
+    # variables for the template rendering engine
+    vars = dict(title = 'Convert to ML', addtitle = "",
+                form = """<form action='recvAmount'>
 Enter amount(i.e. 11 gallon or 120 oz)<input type='text' name='amount' size'20'>
 <input type='submit'>
-</form>
-<p><a href='/'>Home</a>
-</head>
-<body>
-"""
+</form>""", names="")
 
+    x = env.get_template(filename).render(vars).encode('ascii','ignore')    
+    return x
 
 def recipesList():
+    print os.getcwd()
+    # this sets up jinja2 to load templates from the 'templates' directory
+    loader = jinja2.FileSystemLoader('../drinkz/templates')
+    env = jinja2.Environment(loader=loader)
+
+    # pick up a filename to render
+    filename = "listPages.html"
+    print >>sys.stderr, '** Rendering:', filename
+
+    #recipe nonsense
     recipeList = db.get_all_recipes()
-    recipeStringHTML = """\
-<html>
-<head>
-<title>Recipe List</title>
-<style type='text/css'>
-h1 {color:red;}
-body {
-font-size: 17px;
-}
-</style>
-<h1>Recipe List</h1><ul>"""
+    recipeNameList = list()
     for recipe in recipeList:
         if recipe.need_ingredients():
             val = "no"
         else:
-           val = "yes"
-        recipeStringHTML += ("<li>"+recipe._recipeName + " " + val +"<p>")
-    recipeStringHTML += ("</ul>"+"<p><a href='/'>Home</a>"+"""</head>
-<body>""")
-
-    return recipeStringHTML
-
-def inventoryList():
-    inventoryStringHTML = """\
-<html>
-<head>
-<title>Inventory List</title>
-<style type='text/css'>
-h1 {color:red;}
-body {
-font-size: 17px;
-}
-</style>
-<h1>Inventory List</h1><ul>"""
-    for (m,l) in db.get_liquor_inventory():
-        inventoryStringHTML+= ("<li>" + str(m)+ " " + str(l)+ " "  + str(db.get_liquor_amount(m,l))+" ml"+ "<p>")
-    inventoryStringHTML += ("</ul>"+"<p><a href='/'>Home</a>"+"""</head>
-<body>""")
-
-    return inventoryStringHTML
+            val = "yes"
+        recipeNameList.append(recipe._recipeName + " " + val)
     
-def liqourTypesList():
-    liqourTypeStringHTML = """\
-<html>
-<head>
-<title>Liqour Types List</title>
-<style type='text/css'>
-h1 {color:red;}
-body {
-font-size: 17px;
-}
-</style>
-<h1>Liqour Types List</h1><ul>"""
-    for (m,l) in db.get_liquor_inventory():
-        liqourTypeStringHTML += ("<li>" + str(m)+ " " + str(l) + "<p>")
-    liqourTypeStringHTML += ("</ul>"+"<p><a href='/'>Home</a>"+"""</head>
-<body>""")
+    
+    # variables for the template rendering engine
 
-    return liqourTypeStringHTML
+    vars = dict(title = 'Recipe List', addtitle = "Add Recipe",
+                form = """<form action='addRecipe'>
+Name<input type='text' name='name' size'20'>
+Ingredients i.e.-'vodka,4 oz,orange juice,12 oz'<input type='text' name='ing' size'20'>
+<input type='submit'>
+</form>""", names=recipeNameList)
+
+    print >>sys.stderr, "** Using vars dictionary:", vars
+    try:
+        template = env.get_template(filename)
+    except Exception:# for nosetests
+        loader = jinja2.FileSystemLoader('./drinkz/templates')
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template(filename)
+        
+    
+    x = template.render(vars).encode('ascii','ignore')    
+    return x
+def inventoryList():
+    # this sets up jinja2 to load templates from the 'templates' directory
+    loader = jinja2.FileSystemLoader('../drinkz/templates')
+    env = jinja2.Environment(loader=loader)
+
+    # pick up a filename to render
+    filename = "listPages.html"
+    print >>sys.stderr, '** Rendering:', filename
+
+    #recipe nonsense
+    inventoryList = list()
+    for (m,l) in db.get_liquor_inventory():
+        inventoryList.append(str(m)+ " " + str(l)+ " "  + str(db.get_liquor_amount(m,l))+" ml")
+    
+    
+    # variables for the template rendering engine
+
+    vars = dict(title = 'Inventory List', addtitle = "Add to Inventory",
+                form = """<form action='addInventory'>
+Manufacturer<input type='text' name='mfg' size'20'>
+Liquor<input type='text' name='liquor' size'20'>
+Amount<input type='text' name='amt' size'20'><p>
+<input type='submit'>
+</form>""", names=inventoryList)
+
+    print >>sys.stderr, "** Using vars dictionary:", vars
+    
+    template = env.get_template(filename)
+    
+    x = template.render(vars).encode('ascii','ignore')    
+    return x
+
+def liqourTypesList():
+    # this sets up jinja2 to load templates from the 'templates' directory
+    
+    loader = jinja2.FileSystemLoader('../drinkz/templates')
+    env = jinja2.Environment(loader=loader)
+
+    # pick up a filename to render
+    filename = "listPages.html"
+    print >>sys.stderr, '** Rendering:', filename
+
+    #recipe nonsense
+    liqourTypesList = list()
+    for (m,l) in db.get_liquor_types():
+        liqourTypesList.append(str(m)+ " " + str(l))
+ 
+    
+    # variables for the template rendering engine
+
+    vars = dict(title = 'Liquor Types List', addtitle = "Add Liquor Type",
+                form = """<form action='addType'>
+Manufacturer<input type='text' name='mfg' size'20'>
+Liquor<input type='text' name='liquor' size'20'>
+Generic Type<input type='text' name='typ' size'20'><p>
+<input type='submit'>
+</form>""", names=liqourTypesList)
+
+    print >>sys.stderr, "** Using vars dictionary:", vars
+    
+    template = env.get_template(filename)
+    
+    x = template.render(vars).encode('ascii','ignore')    
+    return x
 
 def setUpWebServer():
     import random, socket
@@ -280,20 +424,4 @@ def setUpWebServer():
     print "Try using a Web browser to go to http://%s:%d/" % \
           (socket.getfqdn(), port)
     httpd.serve_forever()
-##    
-##if __name__ == '__main__':
-##    args = sys.argv
-##    try:
-##        filename = args[1]
-##    except:
-##        filename = 'myTest'
-##
-##    for line in fileinput.input(['../bin/'+filename], inplace=True):
-##        line = line.replace("drinkz.", "")
-##        sys.stdout.write(line)
-##
-##    load_db('../bin/'+filename)
-##    setUpWebServer()
-
-
 

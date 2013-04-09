@@ -55,4 +55,29 @@ def test_check_generated_page():
     assert text.find("vomit inducing martini") != -1, text
 
 
+#HW 5 tests start here
+def test_check_recipe_possible():
+    
+    initialize_db()
+   
+    myApp = app.SimpleApp()
+
+    environ = {}
+    environ['QUERY_STRING'] = urllib.urlencode(dict(firstname='FOO',
+                                                    lastname='BAR'))
+    environ['PATH_INFO'] = '/recipesList'
+
+    d = {}
+    def my_start_response(s, h, return_in=d):
+        d['status'] = s
+        d['headers'] = h
+    results = myApp.__call__(environ,my_start_response)
+
+    text = "".join(results)
+    
+    assert text.find("vodka martini no") != -1, text
+    assert text.find("scotch on the rocks yes") != -1, text
+    assert text.find("vomit inducing martini no") != -1, text
+
+
 

@@ -1,0 +1,9 @@
+# tree format
+recipeDict:
+    vomit inducing martini:
+        orange juice: 6 oz
+        vermout: 1.5 oz
+    whiskey bath:
+        blended scotch: 2 liter
+    scotch on the rocks:
+        vodka: 4 oz

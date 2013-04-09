@@ -13,7 +13,7 @@ if __name__ == '__main__':
     try:
         filename = args[1]
     except:
-        filename = 'myTest'
+        filename = 'database'
 
     load_db('bin/'+filename)
 

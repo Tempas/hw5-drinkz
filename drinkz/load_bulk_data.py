@@ -7,10 +7,11 @@ Module to load in bulk data from text files.
 #   import drinkz.load_bulk_data
 #   help(drinkz.load_bulk_data)
 #
-
+import yaml
 import csv                              # Python csv package
-
 from . import db                        # import from local package
+from . import recipes
+import pprint
 
 def load_bottle_types(fp):
     """
@@ -70,6 +71,32 @@ def load_inventory(fp):
             print "Could not add to inventory"
     return n
 
+def load_recipes(fp):
+    """
+    Loads in recipe data using yaml
+    r = recipes.Recipe('vomit inducing martini', [('orange juice',
+                                                      '6 oz'),
+                                                     ('vermouth',
+                                                      '1.5 oz')])
+    """
+    n = 0
+    # use safe_load instead load
+    dataMap = yaml.safe_load(fp)
+    recipeDict = dataMap["recipeDict"]
+    for recipeName in recipeDict:
+        ingredients = set()
+        dictOfIngredients = recipeDict[recipeName]
+        for ingredient in dictOfIngredients:
+            myTup = (name,amount) = ingredient, dictOfIngredients[ingredient]
+            ingredients.add(myTup); 
+        try:
+            r = recipes.Recipe(recipeName,ingredients)
+            print ingredients
+            db.add_recipe(r)
+            n+=1
+        except:
+            print "Could not add to inventory"
+    return n
 def data_reader(fp):
 
     reader = csv.reader(fp)

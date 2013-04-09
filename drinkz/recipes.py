@@ -6,6 +6,7 @@ class Recipe(object):
     _recipeName = ""
     _myIngredients = set()
     def __init__(self, name, ingredientList):
+        
         self._myIngredients = set()
         self._recipeName = name
         for ingredient in ingredientList:
@@ -15,7 +16,7 @@ class Recipe(object):
         myList = list()
         for currentIngredient in self._myIngredients:
             listOfMandLTuples = db.check_inventory_for_type(currentIngredient[0])
-
+            
             amountInStock = 0
             for myTuple in listOfMandLTuples:
                 val = db.get_liquor_amount(myTuple[0],myTuple[1])
@@ -25,6 +26,7 @@ class Recipe(object):
             
             if ( amountInDebt < 0 ):
                 myList.append((currentIngredient[0],amountInDebt*-1.))
+        
         return myList
                     
                 
