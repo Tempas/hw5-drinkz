@@ -329,7 +329,7 @@ Ingredients i.e.-'vodka,4 oz,orange juice,12 oz'<input type='text' name='ing' si
 <input type='submit'>
 </form>""", names=recipeNameList)
 
-    print >>sys.stderr, "** Using vars dictionary:", vars
+
     try:
         template = env.get_template(filename)
     except Exception:# for nosetests
@@ -347,7 +347,6 @@ def inventoryList():
 
     # pick up a filename to render
     filename = "listPages.html"
-    print >>sys.stderr, '** Rendering:', filename
 
     #recipe nonsense
     inventoryList = list()
@@ -365,7 +364,7 @@ Amount<input type='text' name='amt' size'20'><p>
 <input type='submit'>
 </form>""", names=inventoryList)
 
-    print >>sys.stderr, "** Using vars dictionary:", vars
+
     
     template = env.get_template(filename)
     
@@ -380,7 +379,6 @@ def liqourTypesList():
 
     # pick up a filename to render
     filename = "listPages.html"
-    print >>sys.stderr, '** Rendering:', filename
 
     #recipe nonsense
     liqourTypesList = list()
@@ -398,7 +396,7 @@ Generic Type<input type='text' name='typ' size'20'><p>
 <input type='submit'>
 </form>""", names=liqourTypesList)
 
-    print >>sys.stderr, "** Using vars dictionary:", vars
+
     
     template = env.get_template(filename)
     

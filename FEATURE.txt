@@ -1,0 +1,19 @@
+FEATURE.txt
+
+Story-
+Mike is hosting a party, and instead of hiring a dj he wants to play his own music. Before the party starts however, he wants guests to send in requests so he can download the music and have it ready by the time everyone gets there. This is also beneficial because it can show guests what to expect at this particular party. 
+
+Implementation-
+For simplicity sake, I would plan on only having one party page for the current drinks site. This way all the drinks and recipes at the moment can apply to this particular party only. So now this entire site is dedicated to a particular party and could be reproduced for more parties. On a new playlist page there will be a list of the current songs including artist name. I could potentially allow the sorting by artist name by using a dictionary on the back end. This dictionary or list will be in db.py. To reiterate, this particular db only applies to one party. Functions Add_To_Playlist(song, artist) and Get_Dict_Of_Playlist(), Get_Dict_Of_Playlist(artist) will be in db.py The JSON-RPC functions will just wrap these three functions.
+
+Web interface-
+
+Currently I am thinking having a table for artist and song name and allowing the user to alphabetize the playlist by song name or artist. This could definitely be simplified to a straight list if I don't allow the sorting functionality. Two forms for artist and song name will suffice in submission of the playlist.
+
+Bonus Functionality(for sauciness)
+
+Search by artist, song.
+
+Remove Song/Artist(host only)
+
+Genre's
