@@ -1,0 +1,11 @@
+CLIENT.TXT
+
+open folder GET app
+
+run part4.py to get host and port
+
+run testpart4.py like so
+
+python testpart4.py host port
+
+asserts will fail if somethings wrong

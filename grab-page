@@ -11,7 +11,7 @@ def main(args):
 
     s.connect((address, int(port)))
 
-    s.send("GET / HTTP/1.0\r\n\r\n")
+    s.send("GET /recv?firstname=asdf&lastname=asdf HTTP/1.0\r\n\r\n")
 
     while 1:
         buf = s.recv(1000)
@@ -20,6 +20,9 @@ def main(args):
         print buf
 
     s.close()
+
+	
+
    
 if __name__ == '__main__':
    main(sys.argv)

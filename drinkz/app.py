@@ -304,16 +304,12 @@ Enter amount(i.e. 11 gallon or 120 oz)<input type='text' name='amount' size'20'>
     return x
 
 def recipesList():
-    print os.getcwd()
     # this sets up jinja2 to load templates from the 'templates' directory
     loader = jinja2.FileSystemLoader('../drinkz/templates')
     env = jinja2.Environment(loader=loader)
 
     # pick up a filename to render
-    filename = "listPages.html"
-    print >>sys.stderr, '** Rendering:', filename
-
-    #recipe nonsense
+    filename = "listPages.html"    #recipe nonsense
     recipeList = db.get_all_recipes()
     recipeNameList = list()
     for recipe in recipeList:
