@@ -299,8 +299,15 @@ def convertToML():
 Enter amount(i.e. 11 gallon or 120 oz)<input type='text' name='amount' size'20'>
 <input type='submit'>
 </form>""", names="")
+    
+    try:
+        template = env.get_template(filename)
+    except Exception:# for nosetests
+        loader = jinja2.FileSystemLoader('./drinkz/templates')
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template(filename)
 
-    x = env.get_template(filename).render(vars).encode('ascii','ignore')    
+    x = template.render(vars).encode('ascii','ignore')
     return x
 
 def recipesList():
@@ -366,9 +373,15 @@ Amount<input type='text' name='amt' size'20'><p>
 
 
     
-    template = env.get_template(filename)
-    
-    x = template.render(vars).encode('ascii','ignore')    
+    try:
+        template = env.get_template(filename)
+    except Exception:# for nosetests
+        loader = jinja2.FileSystemLoader('./drinkz/templates')
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template(filename)
+
+
+    x = template.render(vars).encode('ascii','ignore')
     return x
 
 def liqourTypesList():
@@ -398,9 +411,14 @@ Generic Type<input type='text' name='typ' size'20'><p>
 
 
     
-    template = env.get_template(filename)
-    
-    x = template.render(vars).encode('ascii','ignore')    
+    try:
+        template = env.get_template(filename)
+    except Exception:# for nosetests
+        loader = jinja2.FileSystemLoader('./drinkz/templates')
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template(filename)
+
+    x = template.render(vars).encode('ascii','ignore')
     return x
 
 def setUpWebServer():
